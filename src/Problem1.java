@@ -4,7 +4,7 @@ public class Problem1 {
     { 
 		// Tree 1
 		int[] tree1nums = new int[] {4, 7, 2, 3, 8, 1, 6, 9, 10, 0};
-        BinarySearchTree tree1 = new BinarySearchTree(); 
+        BinarySearchTree<Integer> tree1 = new BinarySearchTree<Integer>(); 
         
         // Insert identical values
         for (Integer i : tree1nums) {
@@ -16,7 +16,7 @@ public class Problem1 {
         // Tree 2
 //        int[] tree2nums = new int[] {2, 1, 3}; // Result is exists inside tree 1
         int[] tree2nums = new int[] {3, 1, 2}; // Result is not exist inside tree 1
-        BinarySearchTree tree2 = new BinarySearchTree();
+        BinarySearchTree<Integer> tree2 = new BinarySearchTree<Integer>();
         
         // Insert identical values
         for (Integer i : tree2nums) {
