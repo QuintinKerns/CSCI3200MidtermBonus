@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+
 
 public class MyDoubleLinkedList<E> {
 	private Node start, end;
@@ -12,27 +14,74 @@ public class MyDoubleLinkedList<E> {
 	
 	//
 	public void reverseSegments(int setSize){
-		// Turn double linked list into an ArrayList
-		ArrayList<E> nodeArray = new ArrayList<E>(currentCount);
-		for (int i = 0; i < currentCount-1; i++){
-			nodeArray.add(start.value);
-			start = start.next;
+		/*
+		 * N: nodeArray length
+		 * S: setSize
+		 * Time Complexity (Worst Case): -2S+12N+((4N^2N)/S)+20
+		 * Big(O): N^2
+		 */
+		long opCnt = 0;
+		// Special Case: setSize = 0 or 1
+		if (setSize == 0 || setSize == 1) {
+			opCnt++;
+			return; // 1: Comparison
 		}
-		start = end = null;
-		try{
-			for (int i = 0; i < nodeArray.size(); i += setSize){ // Loop to make new node list with swapped values
-				this.add(nodeArray.get(i + setSize - 1));
-				int j = i;
-				while ( j < setSize){ // Add in-between values to list
-					this.add(nodeArray.get(j));
-					j++;
-				}
-				this.add(nodeArray.get(i));
+		
+		// Turn double linked list into an ArrayList // 4N + 2
+		ArrayList<E> nodeArray = new ArrayList<E>(currentCount); // 1: Assignment
+		opCnt++;
+		for (int i = 0; i < currentCount; i++){ // 5N + 1
+			nodeArray.add(start.value); // N: Run method
+			start = start.next; // N: Assignment
+			opCnt = 5 * opCnt + 1;
+		}
+		start = end = null; // 2: Assignment
+		opCnt += 2;
+		System.out.println("nodeArray: " + nodeArray);
+		
+		// Special Case: setSize is not a factor of nodeArray length.
+		ArrayList<E> tail = null; // 1: Assignment
+		int remainder = nodeArray.size() % setSize; // 2: Assignment and Math
+		opCnt += 3;
+		if (remainder != 0) { // 1 + 3 + N - setSize + N - (N - setSize)
+			tail = new ArrayList<E>(nodeArray.subList(nodeArray.size() - remainder, nodeArray.size())); // 3
+			opCnt += 3;
+			Collections.reverse(tail); // N - setSize: Worst Case
+			opCnt += tail.size();
+			nodeArray = new ArrayList<E>(nodeArray.subList(0, nodeArray.size() - remainder)); // 1 + (N - (N - setSize))
+			opCnt += 2;
+		}
+		opCnt++;
+		System.out.println("After Special Case: ");
+		System.out.println("nodeArray: " + nodeArray);
+		System.out.println("tail: " + tail);
+		
+		int nodeArrayMinusOne = nodeArray.size() - 1; // 2 Assignment and Math
+		opCnt += 2;
+		
+		// Chop up nodeArray into setSize long sections, reverse those small sections, and stitch it back to get
+		for (int i = 0; i < nodeArrayMinusOne; i += setSize) { // 4N^2N / setSize + 1
+			ArrayList<E> reverseMe = new ArrayList<E>(nodeArray.subList(i, i + setSize)); // 3
+			opCnt += 3;
+			Collections.reverse(reverseMe); // N / setSize
+			opCnt += reverseMe.size();
+			System.out.println(i + ": " + reverseMe);
+			for (E obj : reverseMe) { // 2N / setSize
+				this.add(obj); // N
+				opCnt += 4;
 			}
+			opCnt++;
 		}
-		catch (Exception ex){
-			return;
+		opCnt++;
+		if (remainder != 0) // 2(N - setSize) + 2: Worst Case
+			for (E obj : tail) { // N - setSize + 1
+				this.add(obj); // N - setSize
+				opCnt += 4;
 		}
+		opCnt++;	
+		opCnt++;
+		
+		System.out.println("Operation Count: " + opCnt);
 	}
 	
 	public void printList()
